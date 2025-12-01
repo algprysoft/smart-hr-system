@@ -24,8 +24,8 @@ const Leaves = () => {
         if (!token || !user) { navigate("/"); return; }
         try {
             const endpoint = user.role === "admin"
-                ? "http://localhost:5005/api/leaves"
-                : "http://localhost:5005/api/leaves/my-leaves";
+                ? "https://smart-hr-api.onrender.com/api/leaves"
+                : "https://smart-hr-api.onrender.com/api/leaves/my-leaves";
             
             const res = await axios.get(endpoint, { 
                 headers: { Authorization: `Bearer ${token}` } 
@@ -47,7 +47,7 @@ const Leaves = () => {
       data.append('reason', formData.reason);
       if (file) data.append('attachment', file);
 
-      await axios.post("http://localhost:5005/api/leaves", data, {
+      await axios.post("https://smart-hr-api.onrender.com/api/leaves", data, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
 
@@ -64,7 +64,7 @@ const Leaves = () => {
   const handleStatusUpdate = async (id, status) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5005/api/leaves/${id}`, { status }, {
+      await axios.put(`https://smart-hr-api.onrender.com/api/leaves/${id}`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRefreshKey(k => k + 1);
@@ -76,7 +76,7 @@ const Leaves = () => {
     if(!window.confirm("هل أنت متأكد من حذف طلب الإجازة؟")) return;
     try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5005/api/leaves/${id}`, {
+        await axios.delete(`https://smart-hr-api.onrender.com/api/leaves/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         setRefreshKey(k => k + 1);
@@ -146,7 +146,7 @@ const Leaves = () => {
                 <TableCell>{leave.reason}</TableCell>
                 <TableCell>
                     {leave.attachmentPath ? (
-                        <a href={`http://localhost:5005/${leave.attachmentPath}`} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
+                        <a href={`https://smart-hr-api.onrender.com/${leave.attachmentPath}`} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
                             📎 <span>فتح</span>
                         </a>
                     ) : <span className="text-gray-400">-</span>}

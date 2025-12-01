@@ -20,7 +20,7 @@ const DashboardCharts = () => {
 
         // 1. جلب الرواتب (مع التعامل مع الخطأ بشكل منفصل)
         try {
-            const salaryRes = await axios.get("http://localhost:5005/api/salaries/stats", config);
+            const salaryRes = await axios.get("https://smart-hr-api.onrender.com/api/salaries/stats", config);
             setSalaryData(salaryRes.data);
         } catch (e) { 
             console.warn("فشل جلب إحصائيات الرواتب", e);
@@ -29,7 +29,7 @@ const DashboardCharts = () => {
 
         // 2. جلب الحضور (مع التعامل مع الخطأ بشكل منفصل)
         try {
-            const attendanceRes = await axios.get("http://localhost:5005/api/attendance/stats", config);
+            const attendanceRes = await axios.get("https://smart-hr-api.onrender.com/api/attendance/stats", config);
             setAttendanceData(attendanceRes.data);
         } catch (e) { 
             console.warn("فشل جلب إحصائيات الحضور", e);

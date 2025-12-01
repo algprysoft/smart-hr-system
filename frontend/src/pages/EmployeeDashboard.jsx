@@ -30,7 +30,7 @@ const EmployeeDashboard = ({ user }) => {
 
   useEffect(() => {
     if (locationPermission === "denied") return;
-    const socket = io('http://localhost:5005');
+    const socket = io('https://smart-hr-api.onrender.com');
     navigator.geolocation.getCurrentPosition(
         (pos) => { setLocationPermission("granted"); setCurrentLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
         (err) => { console.error(err); setLocationPermission("denied"); }
@@ -51,7 +51,7 @@ const EmployeeDashboard = ({ user }) => {
     const fetchStatus = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5005/api/attendance/status", { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.get("https://smart-hr-api.onrender.com/api/attendance/status", { headers: { Authorization: `Bearer ${token}` } });
         setStatus(res.data.status);
         if (res.data.checkInTime) setAttendanceTime(formatTime12(res.data.checkInTime));
       } catch (err) { console.error(err); }
@@ -63,7 +63,7 @@ const EmployeeDashboard = ({ user }) => {
     setMsg("جاري التحقق...");
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.post("http://localhost:5005/api/attendance/qr-check-in", { qrContent, latitude: currentLocation.lat, longitude: currentLocation.lng }, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.post("https://smart-hr-api.onrender.com/api/attendance/qr-check-in", { qrContent, latitude: currentLocation.lat, longitude: currentLocation.lng }, { headers: { Authorization: `Bearer ${token}` } });
         setMsg(res.data.message); setRefreshKey(p => p+1);
         new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg").play().catch(()=>{});
     } catch (err) { console.error(err); setMsg(err.response?.data?.message || "فشل"); }
@@ -89,7 +89,7 @@ const EmployeeDashboard = ({ user }) => {
     setMsg("جاري الرفع...");
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.post("http://localhost:5005/api/attendance/check-in", formData, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } });
+        const res = await axios.post("https://smart-hr-api.onrender.com/api/attendance/check-in", formData, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } });
         setMsg(res.data.message); setRefreshKey(p => p+1);
         new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg").play().catch(()=>{});
     } catch (err) { console.error(err); setMsg(err.response?.data?.message || "فشل"); }
@@ -98,7 +98,7 @@ const EmployeeDashboard = ({ user }) => {
   const handleCheckOut = async () => {
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.post("http://localhost:5005/api/attendance/check-out", {}, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.post("https://smart-hr-api.onrender.com/api/attendance/check-out", {}, { headers: { Authorization: `Bearer ${token}` } });
         setMsg(res.data.message); setRefreshKey(p => p+1);
     } catch (err) { console.error(err); setMsg("فشل الانصراف"); }
   };

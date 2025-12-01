@@ -19,8 +19,8 @@ const Shifts = () => {
           const token = localStorage.getItem("token");
           const config = { headers: { Authorization: `Bearer ${token}` } };
           const [shiftsRes, empsRes] = await Promise.all([
-            axios.get("http://localhost:5005/api/shifts", config),
-            axios.get("http://localhost:5005/api/users", config)
+            axios.get("https://smart-hr-api.onrender.com/api/shifts", config),
+            axios.get("https://smart-hr-api.onrender.com/api/users", config)
           ]);
           setShifts(shiftsRes.data);
           setEmployees(empsRes.data);
@@ -37,7 +37,7 @@ const Shifts = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5005/api/shifts", newShift, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post("https://smart-hr-api.onrender.com/api/shifts", newShift, { headers: { Authorization: `Bearer ${token}` } });
       setMsg("✅ تم الإنشاء");
       setNewShift({ name: "", startTime: "", endTime: "" });
       setRefreshKey(k => k + 1);
@@ -48,7 +48,7 @@ const Shifts = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5005/api/shifts/assign", assignData, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post("https://smart-hr-api.onrender.com/api/shifts/assign", assignData, { headers: { Authorization: `Bearer ${token}` } });
       setMsg("✅ تم التعيين");
     } catch (err) { console.error(err); setMsg("❌ فشل التعيين"); }
   };

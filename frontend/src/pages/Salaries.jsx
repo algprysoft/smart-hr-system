@@ -14,7 +14,7 @@ const Salaries = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5005/api/salaries/calculate?month=${month}&year=${year}`, {
+        const res = await axios.get(`https://smart-hr-api.onrender.com/api/salaries/calculate?month=${month}&year=${year}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setReport(res.data);
@@ -28,7 +28,7 @@ const Salaries = () => {
     if(!window.confirm(`هل أنت متأكد من اعتماد راتب ${emp.name}؟`)) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5005/api/salaries/pay", {
+      await axios.post("https://smart-hr-api.onrender.com/api/salaries/pay", {
         userId: emp.userId, month, year, amount: emp.totalSalary, totalHours: emp.totalHours
       }, { headers: { Authorization: `Bearer ${token}` } });
       alert("تم الاعتماد بنجاح! 💰");

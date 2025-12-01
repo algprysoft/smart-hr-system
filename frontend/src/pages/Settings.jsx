@@ -18,7 +18,7 @@ const Settings = () => {
     const fetchSettings = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5005/api/settings", {
+        const res = await axios.get("https://smart-hr-api.onrender.com/api/settings", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSettings(prev => ({ ...prev, ...res.data }));
@@ -34,7 +34,7 @@ const Settings = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.put("http://localhost:5005/api/settings", settings, {
+      await axios.put("https://smart-hr-api.onrender.com/api/settings", settings, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMsg("✅ تم حفظ الإعدادات بنجاح");

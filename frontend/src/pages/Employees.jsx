@@ -20,7 +20,7 @@ const Employees = () => {
     const fetchEmployees = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5005/api/users", {
+        const res = await axios.get("https://smart-hr-api.onrender.com/api/users", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setEmployees(res.data);
@@ -34,12 +34,12 @@ const Employees = () => {
     const token = localStorage.getItem("token");
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:5005/api/users/${currentUser.id}`, formData, {
+        await axios.put(`https://smart-hr-api.onrender.com/api/users/${currentUser.id}`, formData, {
             headers: { Authorization: `Bearer ${token}` }
         });
         setMsg("تم تحديث بيانات الموظف ✅");
       } else {
-        await axios.post("http://localhost:5005/api/users", formData, {
+        await axios.post("https://smart-hr-api.onrender.com/api/users", formData, {
             headers: { Authorization: `Bearer ${token}` }
         });
         setMsg("تمت إضافة الموظف بنجاح ✅");
@@ -58,7 +58,7 @@ const Employees = () => {
     if(!window.confirm("هل أنت متأكد من حذف هذا الموظف وجميع بياناته؟")) return;
     try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5005/api/users/${id}`, {
+        await axios.delete(`https://smart-hr-api.onrender.com/api/users/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         setRefreshKey(k => k + 1);

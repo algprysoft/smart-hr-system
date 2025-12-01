@@ -22,13 +22,13 @@ const Finance = () => {
     const fetchData = async () => {
         try {
             const headers = { Authorization: `Bearer ${token}` };
-            const advRes = await axios.get("http://localhost:5005/api/finance/advances", { headers });
+            const advRes = await axios.get("https://smart-hr-api.onrender.com/api/finance/advances", { headers });
             setAdvances(advRes.data);
 
             if (user.role === 'admin') {
-                const bonRes = await axios.get("http://localhost:5005/api/finance/bonuses", { headers });
+                const bonRes = await axios.get("https://smart-hr-api.onrender.com/api/finance/bonuses", { headers });
                 setBonuses(bonRes.data);
-                const usersRes = await axios.get("http://localhost:5005/api/users", { headers });
+                const usersRes = await axios.get("https://smart-hr-api.onrender.com/api/users", { headers });
                 setUsers(usersRes.data);
             }
         } catch (err) { console.error(err); }
@@ -39,7 +39,7 @@ const Finance = () => {
   const handleRequestAdvance = async (e) => {
     e.preventDefault();
     try {
-        await axios.post("http://localhost:5005/api/finance/advance", advanceForm, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post("https://smart-hr-api.onrender.com/api/finance/advance", advanceForm, { headers: { Authorization: `Bearer ${token}` } });
         alert("تم إرسال طلب السلفة ✅");
         setAdvanceForm({ amount: "", reason: "" });
         setRefresh(p => p+1);
@@ -49,7 +49,7 @@ const Finance = () => {
   const handleDeleteAdvance = async (id) => {
     if(!window.confirm("هل أنت متأكد من حذف الطلب؟")) return;
     try {
-        await axios.delete(`http://localhost:5005/api/finance/advance/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.delete(`https://smart-hr-api.onrender.com/api/finance/advance/${id}`, { headers: { Authorization: `Bearer ${token}` } });
         setRefresh(p => p+1);
     } catch (err) { 
         console.error(err);
@@ -60,7 +60,7 @@ const Finance = () => {
   const handleAddBonus = async (e) => {
     e.preventDefault();
     try {
-        await axios.post("http://localhost:5005/api/finance/bonus", bonusForm, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post("https://smart-hr-api.onrender.com/api/finance/bonus", bonusForm, { headers: { Authorization: `Bearer ${token}` } });
         alert("تمت الإضافة ✅");
         setBonusForm({ userId: "", amount: "", reason: "" });
         setRefresh(p => p+1);
@@ -72,7 +72,7 @@ const Finance = () => {
 
   const handleUpdateStatus = async (id, status) => {
     try {
-        await axios.put(`http://localhost:5005/api/finance/advance/${id}`, { status }, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.put(`https://smart-hr-api.onrender.com/api/finance/advance/${id}`, { status }, { headers: { Authorization: `Bearer ${token}` } });
         setRefresh(p => p+1);
     } catch (err) { 
         console.error(err);

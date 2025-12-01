@@ -33,7 +33,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5005/api/auth/login", {
+      const response = await axios.post("https://smart-hr-api.onrender.com/api/auth/login", {
         email,
         password,
         deviceId
@@ -61,7 +61,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-        const response = await axios.post("http://localhost:5005/api/auth/verify-otp", {
+        const response = await axios.post("https://smart-hr-api.onrender.com/api/auth/verify-otp", {
             userId: tempUserId,
             otp,
             deviceId

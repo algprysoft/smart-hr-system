@@ -11,7 +11,7 @@ const SystemLogs = () => {
     const fetchLogs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5005/api/logs", {
+        const res = await axios.get("https://smart-hr-api.onrender.com/api/logs", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setLogs(res.data);

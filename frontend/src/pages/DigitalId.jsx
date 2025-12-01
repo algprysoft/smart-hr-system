@@ -22,7 +22,7 @@ const DigitalId = () => {
         <div className="h-32 bg-gradient-to-r from-blue-600 to-purple-600 relative">
             <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                 {user.profilePic ? (
-                    <img src={`http://localhost:5005/${user.profilePic}`} alt="User" className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover bg-white" />
+                    <img src={`https://smart-hr-api.onrender.com/${user.profilePic}`} alt="User" className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover bg-white" />
                 ) : (
                     <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center text-3xl font-bold">
                         {user.name.charAt(0)}

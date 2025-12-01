@@ -13,7 +13,7 @@ const Reports = () => {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user || user.role !== 'admin') { navigate("/dashboard"); return; }
-        const res = await axios.get("http://localhost:5005/api/attendance", { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.get("https://smart-hr-api.onrender.com/api/attendance", { headers: { Authorization: `Bearer ${token}` } });
         setLogs(res.data);
       } catch (err) { console.error(err); } 
       finally { setLoading(false); }
@@ -31,7 +31,7 @@ const Reports = () => {
   const downloadExcel = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5005/api/attendance/export", {
+      const res = await axios.get("https://smart-hr-api.onrender.com/api/attendance/export", {
         headers: { Authorization: `Bearer ${token}` }, responseType: 'blob',
       });
       const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -62,7 +62,7 @@ const Reports = () => {
                 {loading ? <tr><td colSpan="7" className="p-6 text-center">جاري التحميل...</td></tr> : logs.map(log => (
                     <tr key={log.id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700">
                         <td className="p-4">
-                            {log.imagePath ? <img src={`http://localhost:5005/${log.imagePath}`} alt="user" className="w-10 h-10 rounded-full object-cover border" /> : '-'}
+                            {log.imagePath ? <img src={`https://smart-hr-api.onrender.com/${log.imagePath}`} alt="user" className="w-10 h-10 rounded-full object-cover border" /> : '-'}
                         </td>
                         <td className="p-4 font-bold">{log.User?.name}</td>
                         <td className="p-4 font-mono">{log.date}</td>

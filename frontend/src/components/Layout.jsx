@@ -14,7 +14,7 @@ const Layout = ({ children }) => {
   useEffect(() => {
     if(!user) return;
 
-    const socket = io('http://localhost:5005');
+    const socket = io('https://smart-hr-api.onrender.com');
     socket.on('new_notification', (data) => {
       if ((data.role === 'admin' && user?.role === 'admin') || (data.userId === user?.id)) {
         toast.info(data.message);

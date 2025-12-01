@@ -34,7 +34,7 @@ const LiveMap = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const socket = io('http://localhost:5005');
+    const socket = io('https://smart-hr-api.onrender.com');
 
     socket.on('update_map', (data) => {
       setEmployees(prev => {

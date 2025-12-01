@@ -13,7 +13,7 @@ const QrStation = () => {
     const getSettings = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:5005/api/settings", {
+            const res = await axios.get("https://smart-hr-api.onrender.com/api/settings", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRefreshRate(res.data.qrRefreshRate || 5000);

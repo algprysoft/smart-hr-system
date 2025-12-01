@@ -15,7 +15,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.put("http://localhost:5005/api/users/password", {
+      await axios.put("https://smart-hr-api.onrender.com/api/users/password", {
         currentPassword: passwords.current,
         newPassword: passwords.new
       }, { headers: { Authorization: `Bearer ${token}` } });
