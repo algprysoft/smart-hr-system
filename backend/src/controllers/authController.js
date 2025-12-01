@@ -1,41 +1,26 @@
 const User = require('../models/User');
-const Company = require('../models/Company'); // <--- مودل الشركات
+const Company = require('../models/Company'); 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { createLog } = require('./logController');
 const { sendEmail } = require('../utils/emailService');
 
-// 🏢 تسجيل شركة جديدة (SaaS)
 exports.registerCompany = async (req, res) => {
     try {
         const { companyName, adminName, email, password } = req.body;
-
-        // 1. التحقق من وجود الإيميل مسبقاً
         const existingUser = await User.findOne({ where: { email } });
-        if (existingUser) {
-            return res.status(400).json({ message: "البريد الإلكتروني مسجل مسبقاً!" });
-        }
+        if (existingUser) return res.status(400).json({ message: "البريد الإلكتروني مسجل مسبقاً!" });
 
-        // 2. إنشاء الشركة
         const company = await Company.create({ name: companyName });
-
-        // 3. إنشاء المدير وربطه بالشركة
         const hashedPassword = await bcrypt.hash(password, 10);
         const admin = await User.create({
-            name: adminName,
-            email,
-            password: hashedPassword,
-            role: 'admin',
-            companyId: company.id // 🔑 ربط المدير بالشركة
+            name: adminName, email, password: hashedPassword, role: 'admin', companyId: company.id 
         });
 
         res.status(201).json({ message: "تم تسجيل الشركة بنجاح! 🏢", company, admin });
-    } catch (error) {
-        res.status(400).json({ message: "فشل التسجيل: " + error.message });
-    }
+    } catch (error) { res.status(400).json({ message: "فشل التسجيل: " + error.message }); }
 };
 
-// 🔐 تسجيل الدخول (مع حماية الجهاز)
 exports.login = async (req, res) => {
     try {
         const { email, password, deviceId } = req.body;
@@ -46,81 +31,87 @@ exports.login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ message: "كلمة المرور خطأ" });
 
-        // 🛡️ فحص الجهاز (للموظفين فقط - يمكن تفعيله للكل)
         if (user.role === 'employee') {
             if (!user.trustedDeviceId) {
                 user.trustedDeviceId = deviceId;
                 await user.save();
             } 
             else if (user.trustedDeviceId !== deviceId) {
-                // جهاز جديد -> أرسل OTP
                 const otp = Math.floor(1000 + Math.random() * 9000).toString();
                 user.otpCode = otp;
-                user.otpExpires = new Date(Date.now() + 10 * 60000); // 10 دقائق
+                user.otpExpires = new Date(Date.now() + 10 * 60000); 
                 await user.save();
 
                 if (user.email) {
-                    await sendEmail(
-                        user.email,
-                        "رمز التحقق (جهاز جديد)",
-                        "⚠️ دخول من جهاز جديد",
-                        `رمز التحقق: <strong>${otp}</strong>`,
-                        'danger'
-                    );
+                    await sendEmail(user.email, "رمز التحقق (جهاز جديد)", "⚠️ دخول من جهاز جديد", `رمز التحقق: <strong>${otp}</strong>`, 'danger');
                 }
-
                 return res.status(403).json({ message: "جهاز جديد! تم إرسال الرمز", requireOtp: true, userId: user.id });
             }
         }
 
-        // ✅ إنشاء التوكن (يحتوي على هوية الشركة)
-        const token = jwt.sign({ 
-            id: user.id, 
-            role: user.role, 
-            companyId: user.companyId // 🔑 هذا هو مفتاح العزل بين الشركات
-        }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-        // تسجيل الحركة
+        const token = jwt.sign({ id: user.id, role: user.role, companyId: user.companyId }, process.env.JWT_SECRET, { expiresIn: '7d' });
         const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        // نمرر companyId للوج أيضاً لكي نسجل حركات الشركة
         await createLog(user.id, user.name, 'تسجيل دخول', 'دخول ناجح', ip, user.companyId);
 
         res.json({ message: "تم الدخول", token, user });
-
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    } catch (error) { res.status(500).json({ error: error.message }); }
 };
 
-// ✅ التحقق من OTP (واعتماد الجهاز الجديد)
 exports.verifyOtp = async (req, res) => {
     try {
         const { userId, otp, deviceId } = req.body;
         const user = await User.findByPk(userId);
+        if (!user || user.otpCode !== otp) return res.status(400).json({ message: "الرمز غير صحيح!" });
+        if (new Date() > user.otpExpires) return res.status(400).json({ message: "انتهت صلاحية الرمز" });
 
-        if (!user || user.otpCode !== otp) {
-            return res.status(400).json({ message: "الرمز غير صحيح!" });
-        }
-
-        if (new Date() > user.otpExpires) {
-            return res.status(400).json({ message: "انتهت صلاحية الرمز" });
-        }
-
-        // اعتماد الجهاز
         user.trustedDeviceId = deviceId;
         user.otpCode = null;
         user.otpExpires = null;
         await user.save();
 
-        const token = jwt.sign({ 
-            id: user.id, 
-            role: user.role, 
-            companyId: user.companyId 
-        }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
+        const token = jwt.sign({ id: user.id, role: user.role, companyId: user.companyId }, process.env.JWT_SECRET, { expiresIn: '7d' });
         res.json({ message: "تم اعتماد الجهاز!", token, user });
+    } catch (error) { res.status(500).json({ error: error.message }); }
+};
+
+// 🚀 دالة الطوارئ لإنشاء المدير في السيرفر الجديد
+exports.setupSystem = async (req, res) => {
+    try {
+        // 1. إنشاء الشركة إذا لم توجد
+        let company = await Company.findByPk(1);
+        if (!company) {
+            company = await Company.create({
+                id: 1,
+                name: "الشركة الرئيسية",
+                subscriptionPlan: "enterprise",
+                companyLat: 24.7136, companyLng: 46.6753, allowedRadius: 5000,
+                hourlyRate: 50, deductionPerMinute: 1,
+                emailServiceActive: false,
+                absenceCheckTime: "10:00",
+                qrRefreshRate: 5000,
+                themeColor: "#3b82f6"
+            });
+        }
+
+        // 2. إنشاء المدير إذا لم يوجد
+        const adminEmail = "admin@system.com";
+        let admin = await User.findOne({ where: { email: adminEmail } });
+        
+        if (!admin) {
+            const hashedPassword = await bcrypt.hash("123456", 10);
+            admin = await User.create({
+                name: "المدير العام",
+                email: adminEmail,
+                password: hashedPassword,
+                role: "admin",
+                companyId: company.id
+            });
+            res.send("<h1>✅ تم إنشاء حساب المدير والشركة بنجاح!</h1><p>Email: admin@system.com<br>Pass: 123456</p>");
+        } else {
+            res.send("<h1>ℹ️ الحساب موجود مسبقاً!</h1>");
+        }
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).send("❌ حدث خطأ: " + error.message);
     }
 };
