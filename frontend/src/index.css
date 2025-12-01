@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #f8fafc;
+  direction: rtl;
+  text-align: right;
+  font-family: 'Cairo', 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+/* شريط التمرير */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+/* الطباعة */
+@media print {
+  nav, button, .no-print, .sidebar-container {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  .print-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@keyframes progress {
+  0% { width: 100%; }
+  100% { width: 0%; }
+}
+.animate-progress {
+  animation: progress 5s linear infinite;
+}
