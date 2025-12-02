@@ -12,20 +12,13 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
-
 const upload = multer({ storage: storage });
-
-// إعداد استقبال حقلين: صورة شخصية + سيرة ذاتية
-const uploadFields = upload.fields([
-    { name: 'profilePic', maxCount: 1 }, 
-    { name: 'cv', maxCount: 1 }
-]);
+const uploadFields = upload.fields([{ name: 'profilePic', maxCount: 1 }, { name: 'cv', maxCount: 1 }]);
 
 router.get('/', authMiddleware, userController.getAllEmployees);
-router.post('/', authMiddleware, userController.createEmployee);
+// تعديل هنا: السماح برفع الصور عند الإنشاء
+router.post('/', authMiddleware, uploadFields, userController.createEmployee);
 router.put('/password', authMiddleware, userController.updatePassword);
-
-// الرابط المحدث (يدعم الملفات)
 router.put('/:id', authMiddleware, uploadFields, userController.updateUser); 
 router.delete('/:id', authMiddleware, userController.deleteUser);
 

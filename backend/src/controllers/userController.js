@@ -1,12 +1,14 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const { Op } = require('sequelize');
 
+// جلب الكل (بما فيهم المدراء الآخرين في نفس الشركة)
 exports.getAllEmployees = async (req, res) => {
     try {
         const employees = await User.findAll({
             where: { 
                 companyId: req.user.companyId,
-                role: ['employee', 'hr'] 
+                id: { [Op.ne]: req.user.id } // استثناء نفسي (المدير الحالي)
             },
             attributes: { exclude: ['password'] } 
         });
@@ -16,18 +18,25 @@ exports.getAllEmployees = async (req, res) => {
 
 exports.createEmployee = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password, role, phone, address, age } = req.body;
+        
+        // التعامل مع الصورة
+        const profilePic = req.files && req.files.profilePic ? req.files.profilePic[0].path : null;
+
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) return res.status(400).json({ message: 'البريد مسجل مسبقاً' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
+
         const newUser = await User.create({
             name, email, password: hashedPassword,
             role: role || 'employee',
+            phone, address, age,
+            profilePic, // حفظ الصورة
             companyId: req.user.companyId
         });
 
-        res.status(201).json({ message: "تم الإضافة", user: newUser });
+        res.status(201).json({ message: "تم الإضافة بنجاح ✅", user: newUser });
     } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
@@ -52,7 +61,7 @@ exports.updateUser = async (req, res) => {
         }
 
         await user.save();
-        res.json({ message: "تم التحديث ✅", user });
+        res.json({ message: "تم التحديث ✅" });
     } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
